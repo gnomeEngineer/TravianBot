@@ -1,0 +1,18 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+apply plugin:'application'
+
+
+sourceCompatibility = 1.6
+
+mainClassName = "main.kruttaras.webclient.WebBot"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile  'org.seleniumhq.selenium:selenium-server:2.41.0'
+}
+
