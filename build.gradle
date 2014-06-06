@@ -6,8 +6,6 @@ apply plugin:'application'
 
 sourceCompatibility = 1.6
 
-mainClassName = "main.kruttaras.webclient.WebBot"
-
 repositories {
     mavenCentral()
 }
@@ -15,4 +13,23 @@ repositories {
 dependencies {
     compile  'org.seleniumhq.selenium:selenium-server:2.41.0'
 }
+
+mainClassName = 'krut.taras.web.client.WebBot'
+
+jar {
+    doFirst {
+        into( 'lib' ) {
+            from configurations.compile
+        }
+        into( 'conf' ) {
+            from  "conf/application.conf"
+        }
+    }
+
+    manifest {
+        attributes 'Main-Class': 'krut.taras.web.client.WebBot'
+        attributes 'Class-Path': configurations.compile.files.collect { 'lib/' + it.name }.join(' ')
+    }
+}
+
 

@@ -1,9 +1,9 @@
-package main.kruttaras.webclient;
+package krut.taras.web.client;
 
+import com.google.common.base.Optional;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -24,14 +24,20 @@ public class WebBot {
     public static  WebDriver webdriver = new HtmlUnitDriver();
     //You can set also FireFox driver
 
-    public static void main(String[] args) {
+    public static void main() {
 
         Properties properties = loadProperties();
+        Optional<String> url = Optional.of(properties.getProperty("target.url"));
+        Optional<String> user = Optional.of(properties.getProperty("target.user"));
+        Optional<String> password = Optional.of(properties.getProperty("target.pass"));
 
-        String url = properties.getProperty("target.url");
-        webdriver.get(url);
-        waitForElement(By.name("name")).sendKeys(properties.getProperty("target.user"));
-        webdriver.findElement(By.name("password")).sendKeys(properties.getProperty("target.pass"));
+        if(!url.isPresent() || !user.isPresent() || !password.isPresent()) {
+            System.out.print("application is not configured");
+            return;
+        }
+        webdriver.get(url.get());
+        waitForElement(By.name("name")).sendKeys(user.get());
+        webdriver.findElement(By.name("password")).sendKeys(password.get());
         webdriver.findElement(By.className("button-content")).click();
         waitForElement(By.className("playerName"));
         webdriver.findElement(By.className("villageBuildings")).findElement(By.tagName("a")).click();
@@ -81,7 +87,7 @@ public class WebBot {
             prop.load(input);
 
         } catch (IOException ex) {
-
+            System.out.print("Cant read file");
             ex.printStackTrace();
 
         } finally {
