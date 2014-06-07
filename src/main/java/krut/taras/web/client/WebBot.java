@@ -1,6 +1,5 @@
 package krut.taras.web.client;
 
-import com.google.common.base.Optional;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -14,37 +13,41 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 public class WebBot {
 
 
     public static final String PROPERTIES_FILE = "conf/application.conf";
     private static final int DEFAULT_TIMEOUT = 12;
-
     //HtmlUnitDriver - headless browser
-    public static  WebDriver webdriver = new HtmlUnitDriver();
+    private static  WebDriver webdriver = new HtmlUnitDriver();
     //You can set also FireFox driver
 
     public static void main() {
 
         Properties properties = loadProperties();
-        Optional<String> url = Optional.of(properties.getProperty("target.url"));
-        Optional<String> user = Optional.of(properties.getProperty("target.user"));
-        Optional<String> password = Optional.of(properties.getProperty("target.pass"));
+        String url = properties.getProperty("target.url");
+        String user = properties.getProperty("target.user");
+        String password = properties.getProperty("target.pass");
 
-        if(!url.isPresent() || !user.isPresent() || !password.isPresent()) {
-            System.out.print("application is not configured");
+        if(isEmpty(url) || isEmpty(user) || isEmpty(password)) {
+            System.out.print("Application is not configured properly");
             return;
         }
-        webdriver.get(url.get());
-        waitForElement(By.name("name")).sendKeys(user.get());
-        webdriver.findElement(By.name("password")).sendKeys(password.get());
-        webdriver.findElement(By.className("button-content")).click();
+        webdriver.get(url);
+        waitForElement(By.name("name")).sendKeys(user);
+        findElement(By.name("password")).sendKeys(password);
+        findElement(By.className("button-content")).click();
+
         waitForElement(By.className("playerName"));
-        webdriver.findElement(By.className("villageBuildings")).findElement(By.tagName("a")).click();
+        findElement(By.className("villageBuildings")).findElement(By.tagName("a")).click();
+
         waitForElement(By.xpath("//area[@href='build.php?id=39']")).click();
+
         waitForElement(By.xpath("//a[@href='build.php?tt=99&id=39']")).click();
         WebElement table = waitForElement(By.xpath("//table[@class='list']"));
-        List<WebElement> checkboxes = webdriver.findElements(By.xpath("//table[@class='list']//td[1]/input[@type='checkbox']"));
+        List<WebElement> checkboxes = findElements(By.xpath("//table[@class='list']//td[1]/input[@type='checkbox']"));
 
         for(WebElement checkbox : checkboxes) {
             if ( !checkbox.isSelected() )
@@ -53,13 +56,22 @@ public class WebBot {
             }
         }
 
-        WebElement submit = webdriver.findElement(By.xpath("//button[starts-with(@id, 'button')][@type='submit']"));
+        WebElement submit = findElement(By.xpath("//button[starts-with(@id, 'button')][@type='submit']"));
         submit.click();
         String result = waitForElement(By.xpath("//div[starts-with(@class,'listContent')]/p")).getText();
 
         System.out.print("Result: " + result);
 
         webdriver.quit();
+    }
+
+
+    private static WebElement findElement(By matcher) {
+        return webdriver.findElement(matcher);
+    }
+
+    private static List<WebElement> findElements(By matcher) {
+        return webdriver.findElements(matcher);
     }
 
     private static WebElement waitForElement(By condition) {
@@ -72,7 +84,7 @@ public class WebBot {
         try {
             webElement = new WebDriverWait(webdriver, secondsToWait).until(ExpectedConditions.presenceOfElementLocated(condition));
         } catch (org.openqa.selenium.TimeoutException e) {
-            return webdriver.findElement(condition);
+            return findElement(condition);
         }
         return webElement;
     }
@@ -87,7 +99,7 @@ public class WebBot {
             prop.load(input);
 
         } catch (IOException ex) {
-            System.out.print("Cant read file");
+            System.out.print("CAN NOT READ PROPRIETIES FILE");
             ex.printStackTrace();
 
         } finally {
