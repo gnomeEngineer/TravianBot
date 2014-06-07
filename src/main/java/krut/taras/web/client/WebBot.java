@@ -24,7 +24,7 @@ public class WebBot {
     private static  WebDriver webdriver = new HtmlUnitDriver();
     //You can set also FireFox driver
 
-    public static void main() {
+    public static void main(String[] args) {
 
         Properties properties = loadProperties();
         String url = properties.getProperty("target.url");
@@ -41,12 +41,22 @@ public class WebBot {
         findElement(By.className("button-content")).click();
 
         waitForElement(By.className("playerName"));
+        String region = findElement(By.id("sidebarBoxVillagelist"))
+                .findElement(By.className("active"))
+                .findElement(By.className("name"))
+                .getText();
+        System.out.println("Current regoin: " + region);
         findElement(By.className("villageBuildings")).findElement(By.tagName("a")).click();
 
         waitForElement(By.xpath("//area[@href='build.php?id=39']")).click();
 
         waitForElement(By.xpath("//a[@href='build.php?tt=99&id=39']")).click();
-        WebElement table = waitForElement(By.xpath("//table[@class='list']"));
+        try {
+            waitForElement(By.xpath("//table[@class='list']"));
+        }catch (Exception ex) {
+            System.out.println("Farm list was not found");
+            return;
+        }
         List<WebElement> checkboxes = findElements(By.xpath("//table[@class='list']//td[1]/input[@type='checkbox']"));
 
         for(WebElement checkbox : checkboxes) {
