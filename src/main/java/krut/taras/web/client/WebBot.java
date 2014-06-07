@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.LogManager;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
@@ -25,6 +26,7 @@ public class WebBot {
     //You can set also FireFox driver
 
     public static void main(String[] args) {
+        LogManager.getLogManager().reset();
 
         Properties properties = loadProperties();
         String url = properties.getProperty("target.url");
@@ -70,7 +72,7 @@ public class WebBot {
         submit.click();
         String result = waitForElement(By.xpath("//div[starts-with(@class,'listContent')]/p")).getText();
 
-        System.out.print("Result: " + result);
+        System.out.println("Result: " + result);
 
         webdriver.quit();
     }
