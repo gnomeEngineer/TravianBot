@@ -35,6 +35,7 @@ public class WebBot {
 
         if(isEmpty(url) || isEmpty(user) || isEmpty(password)) {
             System.out.print("Application is not configured properly");
+            webdriver.close();
             return;
         }
         webdriver.get(url);
