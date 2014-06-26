@@ -26,11 +26,9 @@ public class WebBot {
 	private static final int DEFAULT_TIMEOUT = 12;
 	//HtmlUnitDriver - headless browser
 	private static WebDriver webdriver = new HtmlUnitDriver();
-
 	//You can set also FireFox driver
 
 	public static void main(String[] args) {
-		WebBot webBot = new WebBot();
 		Properties properties = loadProperties();
 		url = properties.getProperty("target.url");
 		user = properties.getProperty("target.user");
@@ -40,7 +38,7 @@ public class WebBot {
 		maxRandomTime = Integer.parseInt(properties.getProperty("target.maxRandomTime")) * 60000;
 		firstDelayTime = Integer.parseInt(properties.getProperty("target.firstDelayTime")) * 60000;
 		timer = new Timer();
-		timer.schedule(webBot.new Task(), firstDelayTime);
+		timer.schedule(new WebBot().new Task(), firstDelayTime);
 
 		webdriver.get(url);
 		waitForElement(By.name("name")).sendKeys(user);
@@ -48,10 +46,12 @@ public class WebBot {
 		findElement(By.className("button-content")).click();
 		
 		Runtime.getRuntime().addShutdownHook(new Thread() {
-			   @Override
-			   public void run() {
-				   webdriver.close();
-			   }
+
+			@Override
+			public void run() {
+				webdriver.close();
+				timer.cancel();
+			}
 		});
 	}
 
@@ -157,8 +157,7 @@ public class WebBot {
 			System.out.println("---------------------------------");
 			System.out.println(Calendar.getInstance().getTime());
 			startFarm();
-			double randomRange;
-			randomRange = new Random().nextDouble() * maxRandomTime;
+			double randomRange = new Random().nextDouble() * maxRandomTime;
 			System.out.println((int) ((double) (repeatTime + randomRange) / 60000) + " min to next raide");
 			timer.schedule(new Task(), repeatTime + (int) randomRange);
 		}
