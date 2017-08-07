@@ -12,7 +12,7 @@ dependencies {
     compile  'org.seleniumhq.selenium:selenium-server:2.41.0'
 }
 
-mainClassName = 'krut.taras.web.client.WebBot'
+//mainClassName = 'krut.taras.web.client.WebBot'
 
 apply plugin:'application'
 
